@@ -1,0 +1,16 @@
+name: Hello World Action
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Run script
+        run: echo "Hello, World!"
+
+
+
+# The first step checks out the repository code, which clones the repository to the runner (the virtual machine where the action runs - in this case a GitHub-hosted ubuntu runner).
+#This YAML file defines a GitHub Action that triggers on every push to the repository. It checks out the code and then runs a script that prints "Hello, World!" to the console.
