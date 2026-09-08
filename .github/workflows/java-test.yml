@@ -1,5 +1,43 @@
-name: Java test
+#name: Java test
+#
+#on:
+#  push:
+#    branches:
+#      - main
+#  pull_request:
+#    branches:
+#      - main
+#  workflow_dispatch:
+#
+#jobs:
+#  build:
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: read
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@v6
+#
+#      - name: Set up JDK
+#        uses: actions/setup-java@v5
+#        with:
+#          java-version: '25'
+#          distribution: 'temurin'
+#
+#      - name: Run tests
+#        run: mvn -B test
 
+
+#The on section specifies that the action will run on pushes and pull requests to the main branch.
+#The workflow_dispatch event allows you to manually trigger the workflow from the GitHub Actions tab in your GitHub repository.
+#The steps section defines the individual steps of the job:
+#The first step checks out the repository code.
+#The second step sets up the Java Development Kit (JDK) using the actions/setup-java action.
+#The third step runs the Maven command to execute the tests.
+
+
+
+name: Java test with caching
 on:
   push:
     branches:
@@ -24,13 +62,17 @@ jobs:
           java-version: '25'
           distribution: 'temurin'
 
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
       - name: Run tests
         run: mvn -B test
 
 
-#The on section specifies that the action will run on pushes and pull requests to the main branch.
-#The workflow_dispatch event allows you to manually trigger the workflow from the GitHub Actions tab in your GitHub repository.
-#The steps section defines the individual steps of the job:
-#The first step checks out the repository code.
-#The second step sets up the Java Development Kit (JDK) using the actions/setup-java action.
-#The third step runs the Maven command to execute the tests.
+# We have added a caching step to speed up the build process by reusing the downloaded Maven dependencies. This will significantly reduce the build time for subsequent runs.
+#A cache-key is created based on the hash of the pom.xml file. If the pom.xml file changes, a new cache will be created. The restore-keys option allows the action to fall back to a more general cache if an exact match is not found.
+#When the action runs, it will first check if there is a cache available for the current state of the pom.xml file. If a cache is found, it will restore the cached dependencies to the ~/.m2/repository directory before running the Maven tests.
